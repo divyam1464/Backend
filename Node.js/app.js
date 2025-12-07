@@ -1,12 +1,15 @@
-const fs = require('fs');
-const http = require('http');
-const path = require('path');
-const os = require('os');
-const url = require('url');
-const crypto = require('crypto');
-const sayHello = require('./greetings.js');
-const math = require('./math.js');
-const lodash = require('lodash');
+const fs = require("fs");
+const http = require("http");
+const path = require("path");
+const os = require("os");
+const url = require("url");
+const crypto = require("crypto");
+const sayHello = require("./greetings.js");
+const math = require("./math.js");
+const lodash = require("lodash");
+const readline = require("readline");
+const { log } = require("console");
+const EventEmitter = require("events");
 // fs.readFile('example.txt','UTF8',(err,data)=>{
 //     if (err){
 //         console.log(err);
@@ -72,13 +75,117 @@ const lodash = require('lodash');
 // console.log(numbers);
 // console.log(lodash.reverse(numbers));
 
-const readableStream = fs.createReadStream('example.txt',{encoding: 'UTF8'});
-readableStream.on('data',(chunk)=>{
-    console.log(chunk);
+// const readableStream = fs.createReadStream('example.txt',{encoding: 'UTF8'});
+// readableStream.on('data',(chunk)=>{
+//     console.log(chunk);
+// });
+// readableStream.on('end',()=>{
+//     console.log('Finished reading the file.');
+// });
+// readableStream.on('error',(err)=>{
+//     console.log('Error',err);
+// });
+
+// const writableStream = fs.createWriteStream('output2.txt');
+// writableStream.write('Hello ');
+// writableStream.write('World');
+// writableStream.end();
+// writableStream.on('finish',()=>{
+//     console.log('Finished writing to the file.');
+// });
+
+// const readableStream = fs.createReadStream('example.txt');
+// const writableStream = fs.createWriteStream('example-output.txt');
+
+// readableStream.pipe(writableStream);
+// writableStream.on('finish',()=>{
+//     console.log('File copied successfully...!');
+// });
+
+// const readableStream = fs.createReadStream('example.txt');
+// const rl = readline.createInterface({input: readableStream});
+
+// rl.on('line',(line)=>{
+//     console.log('line: ', line);
+// });
+// rl.on('close',()=>{
+//     console.log('Finished processing the file.');
+// });
+
+// fs.mkdir('newDirectory',(err)=>{
+//     if (err){
+//         return console.log('Error creating the directory : ',err);
+//     }
+//     console.log('Directory Created successfully.');
+// });
+// fs.mkdirSync('newDirectory2');
+// console.log('Directory Created Successfully.');
+// fs.readdir('./',(err,files)=>{
+//     if(err){
+//        return console.log("Error reading the directory.");
+//     }
+//     return console.log('Directory Contents: ',files);
+// });
+// console.log(fs.readdirSync('./'));
+
+// if ( fs.existsSync('newDirectory3') ){
+//     console.log('Directory Exists....');
+// }
+// else{
+//     console.log('Directory does not exists....');
+// }
+// fs.rmdir('newDirectory',(err)=>{
+//     if (err){
+//         return console.log('Error',err);
+//     }
+//     else{
+//         console.log('Directory removed successfully');
+//     }
+// });
+// fs.rm('newDirectory2',{recursive: true},(err)=>{
+//     if (err){
+//         return console.log('Error',err);
+//     }
+//     else{
+//         console.log('Directory removed successfully');
+//     }
+// });
+// fs.rename('folder2','folder20000',(err)=>{
+//     if (err){
+//        return console.log('Error occured while changing the name : ',err);
+//     }
+//     console.log('Folder name changed.');
+// });
+// fs.stat('./',(err, stats)=>{
+//     if ( err ){
+//         console.log("Error occured.");
+//     }
+//     else{
+//         console.log('Successfully : ', stats);
+//         console.log('is Directory : ', stats.isDirectory());
+//     }
+// });
+// fs.watch('./',(eventType, filename)=>{
+//     console.log(`Event ${eventType}`);
+//     if ( filename ){
+//         console.log('Filename: ${filename}');
+//     }
+// });
+
+const emitter = new EventEmitter();
+//Registering an event listener
+emitter.on("test1", () => {
+  console.log("An event has occured has occured in test 1");
 });
-readableStream.on('end',()=>{
-    console.log('Finished reading the file.');
+
+emitter.on("error", (error) => {
+  console.error("Error event: ", error.message);
 });
-readableStream.on('error',(err)=>{
-    console.log('Error',err);
-});
+
+try {
+  emitter.emit("test1");
+  emitter.removeListener("test1");
+  emitter.emit("test1");
+} catch (error) {
+  emitter.emit("error", error);
+}
