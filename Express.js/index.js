@@ -1,48 +1,43 @@
 // const express = require("express");
-import cookieParser from "cookie-parser";
 import express from "express";
-import session from "express-session";
 
 const app = express();
 const PORT = 3000;
-app.use(cookieParser());
-app.use(
-  session({
-    secret: "sample-secret",
-    resave: false,
-    saveUninitialized: false,
-  })
-);
+app.use(express.json());
 
-const users = [];
+process.on("uncaughtexception", (err) => {
+  console.log(err);
+  process.exit(1);
+});
+
+process.on("unhandledRejection", (reason, promise) => {
+  console.log(reason);
+});
 
 app.get("/", (req, res) => {
   res.send("Hello Express");
 });
 
-app.post("/register", async (req, res) => {
-  const { username, password } = req.body;
-  users.push({
-    username,
-    password,
-  });
-  res.send("User Registered");
-});
-app.post("/login", async (req, res) => {
-  const { username, password } = req.body;
-  const user = users.find((u) => u.username === username);
-  if (!user || password !== user.password) {
-    return res.send("Not Authorized");
+app.get("/sync-error", (req, res, next) => {
+  try {
+    throw new Error("Something went wrong");
+  } catch (error) {
+    next(error);
   }
-  req.session.user = user;
-  res.send("User Login");
 });
 
-app.get("/dashboard", (req, res) => {
-  if (!req.session.user) {
-    return res.send("Unauthorized");
+app.get("/async-error", async (req, res, next) => {
+  try {
+    await Promise.reject(new Error("Async Error occured"));
+  } catch (error) {
+    next(error);
   }
-  res.send(`Welcome, ${req.session.user.username}`);
+});
+
+app.use((err, req, res, next) => {
+  console.error(err.message);
+  console.log(err.stack);
+  res.status(500).json({ message: err.message });
 });
 
 app.listen(PORT, () => {
